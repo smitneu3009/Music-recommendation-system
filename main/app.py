@@ -2,12 +2,12 @@ import pickle
 import streamlit as st
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
+from dotenv import load_dotenv
+import os
 
-CLIENT_ID = "617fe5f4a00c4270a155093962ebb04b"
-CLIENT_SECRET = "c6e17d9d51d9469a955cfa66fc8dab26"
-
+load_dotenv()
 # Initialize the Spotify client
-client_credentials_manager = SpotifyClientCredentials(client_id=CLIENT_ID, client_secret=CLIENT_SECRET)
+client_credentials_manager = SpotifyClientCredentials(client_id=os.getenv('CLIENT_ID'), client_secret=os.getenv('CLIENT_SECRET'))
 sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
 def get_song_album_cover_url(song_name, artist_name):
@@ -27,7 +27,7 @@ def recommend(song):
     distances = sorted(list(enumerate(similarity[index])), reverse=True, key=lambda x: x[1])
     recommended_music_names = []
     recommended_music_posters = []
-    for i in distances[1:6]:
+    for i in distances[1:11]:
         # fetch the movie poster
         artist = music.iloc[i[0]].artist
         print(artist)
@@ -48,24 +48,15 @@ selected_movie = st.selectbox(
 )
 
 if st.button('Show Recommendation'):
-    recommended_music_names,recommended_music_posters = recommend(selected_movie)
-    col1, col2, col3, col4, col5= st.columns(5)
-    with col1:
-        st.text(recommended_music_names[0])
-        st.image(recommended_music_posters[0])
-    with col2:
-        st.text(recommended_music_names[1])
-        st.image(recommended_music_posters[1])
-
-    with col3:
-        st.text(recommended_music_names[2])
-        st.image(recommended_music_posters[2])
-    with col4:
-        st.text(recommended_music_names[3])
-        st.image(recommended_music_posters[3])
-    with col5:
-        st.text(recommended_music_names[4])
-        st.image(recommended_music_posters[4])
+    recommended_music_names, recommended_music_posters = recommend(selected_movie)
+    
+    # Display in rows with 4 posters each
+    for i in range(0, len(recommended_music_names), 5):
+        cols = st.columns(5)
+        for col, name, poster in zip(cols, recommended_music_names[i:i+5], recommended_music_posters[i:i+5]):
+            with col:
+                st.text(name)
+                st.image(poster)   
 
 
 
