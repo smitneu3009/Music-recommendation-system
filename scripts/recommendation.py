@@ -12,7 +12,7 @@ df = pd.read_csv(r"C:\Users\smitp\OneDrive\Desktop\spotify_millsongdata.csv")
 print(df.isnull().sum())
 
 # Sample and drop unnecessary columns
-df = df.sample(10000).drop('link', axis=True).reset_index(drop=True)
+df = df.sample(5000).drop('link', axis=True).reset_index(drop=True)
 
 # Text Cleaning / Text Preprocessing
 df['text'] = df['text'].str.lower().replace(r'^\w\s', ' ', regex=True).replace(r'\n', ' ', regex=True)
